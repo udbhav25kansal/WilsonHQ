@@ -1,0 +1,14 @@
+node_modules
+dist
+dist-ssr
+*.local
+.vite
+.DS_Store
+*.log
+
+# TypeScript build artifacts
+*.tsbuildinfo
+
+# Auto-generated declaration / JS for vite.config.ts (we keep .ts only)
+vite.config.d.ts
+vite.config.js

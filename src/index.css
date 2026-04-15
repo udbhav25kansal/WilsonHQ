@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-cream text-ink font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  ::selection {
+    background: rgba(143, 168, 130, 0.25);
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply uppercase font-semibold text-[10.5px] tracking-eyebrow text-sage;
+  }
+  .display-h1 {
+    @apply font-light leading-[1.05] tracking-tight-display;
+  }
+  .display-h2 {
+    @apply font-light leading-[1.1] tracking-tight-display;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .glow-sage {
+    filter: drop-shadow(0 0 16px rgba(143, 168, 130, 0.45));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom range slider styling */
+.custom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: #e8dfcd;
+  outline: none;
+  cursor: pointer;
+}
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid currentColor;
+  cursor: grab;
+  box-shadow: 0 2px 6px rgba(46, 42, 36, 0.12);
+  transition: transform 0.15s ease;
+}
+.custom-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+}
+.custom-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2.5px solid currentColor;
+  cursor: grab;
+  box-shadow: 0 2px 6px rgba(46, 42, 36, 0.12);
+}
+
+/* Scene 2 (PlatformFlip) additions.
+   - .flip-stage: stabilize the 3D stage so the back face does not bleed through.
+   - .cohort-row: responsive hover on the operator console table. */
+.flip-stage {
+  transform-style: preserve-3d;
+}
+.cohort-row {
+  transition: background-color 160ms ease-out;
+}
+.cohort-row:hover {
+  background-color: #edf1e8; /* sage-soft */
+}
+
+/* Scene 4 (FeedTeaser) additions.
+   - .feed-scroll: slim cream scrollbar inside the simulated social feed.
+   - .efi-chip-alarm: one-off subtle pulse so negative-EFI chips feel alarming
+     on arrival without the UI becoming noisy. Two pulses, then quiet. */
+.feed-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.feed-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.feed-scroll::-webkit-scrollbar-thumb {
+  background: #e8dfcd;
+  border-radius: 999px;
+}
+@keyframes efiAlarm {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(201, 126, 98, 0)); }
+  50%      { filter: drop-shadow(0 0 10px rgba(201, 126, 98, 0.55)); }
+}
+.efi-chip-alarm {
+  animation: efiAlarm 2.8s ease-in-out 0.4s 2;
+}
