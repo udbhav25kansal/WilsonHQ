@@ -42,14 +42,14 @@ export default function FeedTeaser() {
   }
 
   return (
-    <div className="relative px-12 pb-20 overflow-hidden">
+    <div className="relative px-4 md:px-12 pb-20 overflow-hidden">
       <Blob color="lavender" size={340} style={{ top: 40, right: -120 }} />
       <Blob color="coral" size={260} style={{ bottom: 80, left: -90 }} delay={0.2} />
 
       <div className="relative z-10 max-w-6xl mx-auto">
         <Eyebrow color="lavender">Expansion Vector · Slide 04</Eyebrow>
         <div className="flex items-end justify-between gap-6 mt-3 mb-2">
-          <h2 className="display-h2 text-[44px] text-ink">The Wellbeing Layer for Social Media</h2>
+          <h2 className="display-h2 text-[26px] md:text-[44px] text-ink">The Wellbeing Layer for Social Media</h2>
           <div className="hidden md:flex items-center gap-2 text-[10px] uppercase tracking-eyebrow font-semibold text-lavender-deep bg-lavender-soft border border-lavender/30 rounded-full px-3 py-1.5 whitespace-nowrap">
             <span className="w-1.5 h-1.5 rounded-full bg-lavender animate-pulse" />
             Timely: UK Online Safety Act · EU DSA
@@ -89,9 +89,9 @@ export default function FeedTeaser() {
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
           {/* Feed column */}
-          <div className="col-span-7">
+          <div className="lg:col-span-7">
             <div className="bg-white rounded-2xl border border-border-soft shadow-card overflow-hidden">
               <div className="px-5 py-3 border-b border-border-soft flex items-center justify-between bg-cream-warm">
                 <div className="flex items-center gap-2">
@@ -126,7 +126,7 @@ export default function FeedTeaser() {
           </div>
 
           {/* Sidebar */}
-          <div className="col-span-5 space-y-4">
+          <div className="lg:col-span-5 space-y-4">
             <CumulativePanel cumulative={cumulative} count={visibleCount} />
             <ImpactBars posts={visiblePosts} />
             <Insight cumulative={cumulative} count={visibleCount} />
@@ -134,7 +134,7 @@ export default function FeedTeaser() {
         </div>
 
         {/* For Platforms / Users / Society band, matched to deck slide 4 */}
-        <div className="grid grid-cols-3 gap-4 mt-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mt-12">
           <BenefitCell
             color="sage"
             title="For Platforms"

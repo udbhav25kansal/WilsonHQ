@@ -47,7 +47,7 @@ export default function PlatformFlip() {
   }, [side])
 
   return (
-    <div className="relative px-12 pb-20 overflow-hidden">
+    <div className="relative px-4 md:px-12 pb-20 overflow-hidden">
       <Blob color="sage" size={320} style={{ top: 80, right: -120 }} />
       <Blob color="lavender" size={260} style={{ bottom: 200, left: -80 }} delay={0.2} />
       <Blob color="coral" size={220} style={{ top: 320, left: '42%' }} delay={0.4} />
@@ -57,7 +57,7 @@ export default function PlatformFlip() {
         <div className="flex items-end justify-between gap-6 mb-6">
           <div>
             <Eyebrow color="coral">The Two-Sided Loop · Slide 02</Eyebrow>
-            <h2 className="display-h2 text-[44px] text-ink mb-2 mt-3">Reversing the Model</h2>
+            <h2 className="display-h2 text-[28px] md:text-[44px] text-ink mb-2 mt-3">Reversing the Model</h2>
             <p className="font-light italic text-[15px] text-ink-muted">
               Same app. Two views. The loop made visible.
             </p>
@@ -159,9 +159,9 @@ export default function PlatformFlip() {
 
 function UserView({ recommended }: { recommended: (typeof sessions)[number] }) {
   return (
-    <div className="grid grid-cols-12 gap-10 items-start">
-      <div className="col-span-5 flex flex-col items-center">
-        <Phone width={340} height={680}>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+      <div className="lg:col-span-5 flex flex-col items-center">
+        <Phone width={320} height={640}>
           <StillHeader subtitle="Session impact" />
           <BaselineCard baselineEFI={splitScreenChoreography.preEFI} />
           <SmartMatchCard
@@ -182,11 +182,11 @@ function UserView({ recommended }: { recommended: (typeof sessions)[number] }) {
         <Chip color="sage" className="mt-5">User View</Chip>
       </div>
 
-      <div className="col-span-7 pt-8">
+      <div className="lg:col-span-7 pt-2 lg:pt-8">
         <div className="text-[10.5px] uppercase tracking-eyebrow text-sage-deep font-semibold mb-3">
           To the user
         </div>
-        <p className="font-light text-[30px] leading-[1.15] text-ink mb-5 tracking-tight-display">
+        <p className="font-light text-[22px] md:text-[30px] leading-[1.15] text-ink mb-5 tracking-tight-display">
           Real measurement. A pre score and a post score on every session.
         </p>
         <p className="text-[14px] text-ink-soft leading-relaxed mb-3">
@@ -254,7 +254,7 @@ function PlatformConsole({ ready }: { ready: boolean }) {
       </div>
 
       {/* KPI strip */}
-      <div className="grid grid-cols-4 bg-cream-warm/40 border-b border-border-soft">
+      <div className="grid grid-cols-2 md:grid-cols-4 bg-cream-warm/40 border-b border-border-soft">
         <KpiCell
           icon={<Users className="w-3.5 h-3.5" />}
           label="Active users"

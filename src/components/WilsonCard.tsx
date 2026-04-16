@@ -2,7 +2,9 @@ import { motion } from 'framer-motion'
 import AnimatedNumber from './AnimatedNumber'
 import { ArrowUpRight } from 'lucide-react'
 
-/** Wilson "baseline" card that introduces itself at the start of a session. */
+/** Wilson "baseline" card that introduces itself at the start of a session.
+ *  Pulls from a diverse set of connected health sources to make the SDK premise
+ *  visible at a glance. */
 export function BaselineCard({ baselineEFI, delay = 0 }: { baselineEFI: number; delay?: number }) {
   return (
     <motion.div
@@ -11,16 +13,27 @@ export function BaselineCard({ baselineEFI, delay = 0 }: { baselineEFI: number; 
       transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay }}
       className="mx-3 mt-2 rounded-lg bg-white border border-sage/30 shadow-soft px-4 py-3"
     >
-      <div className="flex items-center gap-1.5 mb-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-sage animate-pulseGlow" />
-        <span className="text-[9.5px] uppercase tracking-eyebrow font-semibold text-sage">Wilson</span>
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-sage animate-pulseGlow" />
+          <span className="text-[9.5px] uppercase tracking-eyebrow font-semibold text-sage">Wilson</span>
+        </div>
+        <span className="text-[8.5px] text-ink-faint italic leading-tight text-right">
+          reading from 6 connected sources
+        </span>
+      </div>
+      <div className="text-[8.5px] text-ink-faint mb-2.5 leading-snug">
+        Apple Health · Apple Watch · Fitbit · Whoop · Calm · Strava
       </div>
       <div className="text-[11px] text-ink-soft leading-snug mb-3">
         Your body is telling me today was heavier than most.
       </div>
       <div className="space-y-1 text-[10.5px] tabular">
         <Row label="Sleep last night" value="5h 42m" />
+        <Row label="Resting heart rate" value="72 bpm (+8)" />
         <Row label="Heart rate variability" value="low" />
+        <Row label="Steps yesterday" value="3,240" />
+        <Row label="Caffeine today" value="320 mg" />
         <Row label="Stress markers" value="elevated" />
       </div>
       <div className="mt-3 pt-2.5 border-t border-border-soft flex items-baseline justify-between">
@@ -42,19 +55,21 @@ function Row({ label, value }: { label: string; value: string }) {
   )
 }
 
-/** Smart match recommendation card. */
+/** Smart match recommendation card. The reasoning is grounded in this user's
+ *  own history, not in cohort or demographic averages, which is the actual
+ *  Wilson IP. */
 export function SmartMatchCard({
   title,
   duration,
   technique,
-  upliftRate,
   onBegin,
   delay = 0,
 }: {
   title: string
   duration: string
   technique: string
-  upliftRate: number
+  /** Kept for API compatibility, currently unused in copy. */
+  upliftRate?: number
   onBegin?: () => void
   delay?: number
 }) {
@@ -66,14 +81,16 @@ export function SmartMatchCard({
       className="mx-3 mt-2 rounded-lg bg-sage-soft border border-sage/30 px-4 py-3"
     >
       <div className="text-[9.5px] uppercase tracking-eyebrow font-semibold text-sage-deep mb-1.5">
-        Recommended for you, today
+        Matched to your history
       </div>
       <div className="font-medium text-[14px] text-ink leading-tight">
         {title} <span className="font-light text-ink-muted">· {duration}</span>
       </div>
       <div className="text-[10.5px] text-ink-muted mt-0.5">{technique}</div>
-      <div className="text-[10.5px] text-sage-deep mt-2 leading-snug">
-        <span className="font-semibold tabular">{upliftRate}%</span> uplift rate for users in your current state.
+      <div className="text-[10.5px] text-sage-deep mt-2.5 leading-snug">
+        Across your last <span className="font-semibold tabular">12 mornings</span> like
+        this one (low sleep, low HRV, elevated stress), this session lifted your EFI by{' '}
+        <span className="font-semibold tabular">+13</span> on average.
       </div>
       <button
         onClick={onBegin}

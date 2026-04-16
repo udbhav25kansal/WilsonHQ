@@ -11,6 +11,45 @@ const accentColor = {
   amber: '#d4b478',
 }
 
+/** Real partner-app names rendered on the orbital nodes. Up to PARTNER_APPS.length
+ *  orbitals receive labels; any orbitals beyond that render as unlabeled dots. */
+const PARTNER_APPS = [
+  'Calm', 'Headspace', 'Fitbit', 'Oura', 'Strava', 'Whoop',
+  'Apple Health', 'MyFitnessPal', 'BetterHelp', 'Garmin', 'Cronometer', 'Peloton',
+  'Daily-O', 'Slumber', 'Pzizz', 'Open', 'Balance', 'Talkspace',
+  'Aaptiv', 'Noom', 'Wysa', 'Reflectly', 'Sleep Cycle', 'Mindful',
+]
+
+/** Cross-ecosystem patterns Wilson surfaces. These are concrete examples that
+ *  no single app could possibly find because the trigger and the response
+ *  live in different products. Numbers are placeholders. */
+const PATTERNS = [
+  {
+    trigger: 'TikTok > 90 min after 9pm',
+    discovery:
+      'Sleep meditation needs to be 2x longer to lift EFI. Standard 8 min sessions plateau at +2.',
+    sources: ['TikTok', 'Calm', 'Sleep Cycle'],
+    users: 2847,
+    confidence: 91,
+  },
+  {
+    trigger: 'Strava workout < 24h ago + Calm session',
+    discovery:
+      'Vagal-tone breathwork lifts EFI by +18 versus the +6 baseline for the same user on rest days.',
+    sources: ['Strava', 'Calm', 'Whoop'],
+    users: 1604,
+    confidence: 88,
+  },
+  {
+    trigger: 'Caffeine > 250mg + low HRV',
+    discovery:
+      'Grounding outperforms breath work 2.4x on EFI lift. Standard recommendation engines suggest the opposite.',
+    sources: ['Cronometer', 'Apple Watch', 'Calm'],
+    users: 3219,
+    confidence: 94,
+  },
+]
+
 export default function Flywheel() {
   const [partnerApps, setPartnerApps] = useState(flywheelDefaults.partnerApps)
   const [users, setUsers] = useState(flywheelDefaults.users)
@@ -22,43 +61,51 @@ export default function Flywheel() {
   const visibleOrbitals = Math.min(60, partnerApps)
 
   return (
-    <div className="relative px-12 pb-20 overflow-hidden">
+    <div className="relative px-4 md:px-12 pb-20 overflow-hidden">
       <Blob color="lavender" size={300} style={{ top: 60, left: -100 }} />
       <Blob color="sage" size={260} style={{ bottom: 80, right: -80 }} delay={0.2} />
 
       <div className="relative z-10 max-w-6xl mx-auto">
         <Eyebrow color="lavender">The Flywheel · Slide 05</Eyebrow>
-        <h2 className="display-h2 text-[44px] text-ink mb-2 mt-3">Every User Makes It Smarter</h2>
+        <h2 className="display-h2 text-[28px] md:text-[44px] text-ink mb-2 mt-3">Every User Makes It Smarter</h2>
         <p className="font-light italic text-[15px] text-ink-muted mb-8">
           Drag to add partner apps and users. Watch the moat deepen.
         </p>
 
-        {/* Live metrics row */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        {/* Live metrics row. Each card shows Wilson's number alongside what a
+            single-app system can reach. The baselines are constants because a
+            single app does not benefit from cross-ecosystem data, no matter
+            how many users it has. */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-6">
           <MetricCard
             label="Cross-app signals"
             value={metrics.crossAppSignals}
             format={(n) => Math.round(n).toLocaleString()}
             color="sage"
+            baseline="0"
+            baselineLabel="single-app silo"
           />
           <MetricCard
             label="Recommendation accuracy"
             value={metrics.recommendationAccuracy}
             format={(n) => `${n.toFixed(0)}%`}
             color="coral"
+            baseline="62%"
+            baselineLabel="single-app baseline"
           />
           <MetricCard
             label="Retention uplift"
             value={metrics.retentionUplift}
             format={(n) => `+${n.toFixed(0)}%`}
             color="lavender"
+            baseline="+5%"
+            baselineLabel="single-app personalization"
           />
         </div>
 
         {/* Canvas */}
         <div
-          className="relative bg-sage-deep rounded-2xl shadow-card overflow-hidden"
-          style={{ height: 480 }}
+          className="relative bg-sage-deep rounded-2xl shadow-card overflow-hidden h-[320px] md:h-[480px]"
         >
           {/* Radial fade toward center */}
           <div
@@ -85,8 +132,13 @@ export default function Flywheel() {
           />
         </div>
 
+        {/* Patterns Wilson has learned. The actual product value: insights
+            that no single app can find because no single app sees the full
+            picture. */}
+        <PatternsPanel />
+
         {/* Sliders */}
-        <div className="grid grid-cols-2 gap-8 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mt-8">
           <SliderControl
             label="Partner apps"
             value={partnerApps}
@@ -184,11 +236,17 @@ function MetricCard({
   value,
   format,
   color,
+  baseline,
+  baselineLabel,
 }: {
   label: string
   value: number
   format: (n: number) => string
   color: 'sage' | 'coral' | 'lavender'
+  /** A single-app system's value for the same metric (constant — single apps cannot scale this). */
+  baseline: string
+  /** What the baseline represents, e.g. "single-app baseline". */
+  baselineLabel: string
 }) {
   const animated = useAnimatedNumber(value)
   const dot = { sage: 'bg-sage', coral: 'bg-coral', lavender: 'bg-lavender' }[color]
@@ -198,15 +256,26 @@ function MetricCard({
     lavender: 'text-lavender-deep',
   }[color]
   return (
-    <div className="bg-white border border-border-soft rounded-lg px-5 py-3 shadow-soft">
-      <div className="flex items-center gap-2 mb-1">
+    <div className="bg-white border border-border-soft rounded-lg px-5 py-3.5 shadow-soft">
+      <div className="flex items-center gap-2 mb-1.5">
         <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
         <span className="text-[10px] uppercase tracking-eyebrow text-ink-muted font-semibold">
           {label}
         </span>
       </div>
-      <div className={`font-light text-[34px] leading-none tabular tracking-tight-display ${text}`}>
-        {format(animated)}
+      <div className="flex items-baseline gap-2.5">
+        <div className={`font-light text-[34px] leading-none tabular tracking-tight-display ${text}`}>
+          {format(animated)}
+        </div>
+        <div className="text-[9.5px] uppercase tracking-eyebrow text-sage-deep font-semibold">
+          Wilson
+        </div>
+      </div>
+      <div className="mt-2 pt-2 border-t border-border-soft/70 flex items-baseline justify-between">
+        <span className="text-[10.5px] text-ink-faint italic">{baselineLabel}</span>
+        <span className="text-[12px] font-medium text-ink-muted tabular line-through decoration-ink-faint/40">
+          {baseline}
+        </span>
       </div>
     </div>
   )
@@ -434,10 +503,13 @@ function FlywheelCanvas({
         )
       })}
 
-      {/* Orbital nodes connected to primaries */}
+      {/* Orbital nodes connected to primaries.
+          The first PARTNER_APPS.length orbitals carry real partner-app names
+          which makes the cross-app premise visible at a glance. */}
       {orbitals.map((o, i) => {
         const parent = primaries[o.parentIdx]
         const parentColor = accentColor[parent.accent as keyof typeof accentColor]
+        const appName = i < PARTNER_APPS.length ? PARTNER_APPS[i] : null
         return (
           <g key={`orb-${i}`}>
             <line
@@ -450,16 +522,16 @@ function FlywheelCanvas({
               strokeWidth={0.7}
             />
             <motion.circle
-              r={o.size}
+              r={appName ? o.size + 0.8 : o.size}
               fill="#dce6d5"
-              fillOpacity={0.88}
+              fillOpacity={appName ? 0.95 : 0.85}
               stroke={parentColor}
-              strokeOpacity={0.5}
-              strokeWidth={0.6}
+              strokeOpacity={appName ? 0.7 : 0.45}
+              strokeWidth={appName ? 0.9 : 0.6}
               initial={{ scale: 0, opacity: 0, cx: parent.x, cy: parent.y }}
               animate={{
                 scale: 1,
-                opacity: 0.9,
+                opacity: appName ? 1 : 0.85,
                 cx: [o.x, o.x + o.driftX, o.x - o.driftX * 0.6, o.x],
                 cy: [o.y, o.y - o.driftY, o.y + o.driftY * 0.7, o.y],
               }}
@@ -470,6 +542,29 @@ function FlywheelCanvas({
                 cy: { duration: o.driftDur + 1.3, repeat: Infinity, ease: 'easeInOut' },
               }}
             />
+            {appName && (
+              <motion.text
+                fontSize={9}
+                fill="#faf5ec"
+                fillOpacity={0.85}
+                textAnchor="middle"
+                fontWeight={500}
+                style={{ fontFamily: 'Poppins, sans-serif', pointerEvents: 'none' }}
+                initial={{ opacity: 0, x: parent.x, y: parent.y }}
+                animate={{
+                  opacity: 0.85,
+                  x: [o.x, o.x + o.driftX, o.x - o.driftX * 0.6, o.x],
+                  y: [o.y + o.size + 11, o.y - o.driftY + o.size + 11, o.y + o.driftY * 0.7 + o.size + 11, o.y + o.size + 11],
+                }}
+                transition={{
+                  opacity: { duration: 0.5, delay: (i % 12) * 0.02 + 0.15 },
+                  x: { duration: o.driftDur, repeat: Infinity, ease: 'easeInOut' },
+                  y: { duration: o.driftDur + 1.3, repeat: Infinity, ease: 'easeInOut' },
+                }}
+              >
+                {appName}
+              </motion.text>
+            )}
           </g>
         )
       })}
@@ -578,5 +673,89 @@ function FlywheelCanvas({
         </text>
       </motion.g>
     </svg>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Patterns Wilson Has Learned                                         */
+/* ------------------------------------------------------------------ */
+
+function PatternsPanel() {
+  return (
+    <div className="mt-10">
+      <div className="flex items-baseline justify-between mb-4">
+        <div>
+          <div className="text-[10.5px] uppercase tracking-eyebrow font-semibold text-lavender-deep mb-1">
+            Patterns Wilson has learned · cross-ecosystem
+          </div>
+          <h3 className="font-light text-[22px] text-ink tracking-tight-display">
+            Insights no single app can find
+          </h3>
+        </div>
+        <span className="text-[11px] text-ink-faint italic max-w-md text-right">
+          Each pattern's trigger lives in one app and its response lives in another.
+          Only Wilson sees both.
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+        {PATTERNS.map((p, i) => (
+          <PatternCard key={i} pattern={p} index={i} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function PatternCard({
+  pattern,
+  index,
+}: {
+  pattern: (typeof PATTERNS)[number]
+  index: number
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: index * 0.08 }}
+      className="bg-white border border-border-soft rounded-lg p-5 shadow-soft flex flex-col"
+    >
+      <div className="text-[10px] uppercase tracking-eyebrow text-ink-faint font-semibold mb-2">
+        When
+      </div>
+      <div className="text-[12.5px] text-ink leading-snug font-medium mb-3 italic">
+        {pattern.trigger}
+      </div>
+
+      <div className="text-[10px] uppercase tracking-eyebrow text-sage font-semibold mb-2">
+        Wilson observed
+      </div>
+      <div className="text-[12px] text-ink-soft leading-relaxed mb-4 flex-1">
+        {pattern.discovery}
+      </div>
+
+      <div className="pt-3 border-t border-border-soft/70 flex items-center justify-between">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {pattern.sources.map((s) => (
+            <span
+              key={s}
+              className="text-[9.5px] font-medium text-ink-muted bg-cream-warm border border-border-soft/60 rounded-full px-2 py-0.5"
+            >
+              {s}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="mt-2.5 flex items-center justify-between text-[10px] text-ink-faint tabular">
+        <span>
+          {pattern.users.toLocaleString()} users
+        </span>
+        <span className="text-sage-deep font-semibold">
+          {pattern.confidence}% confidence
+        </span>
+      </div>
+    </motion.div>
   )
 }
